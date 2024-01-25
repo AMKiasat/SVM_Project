@@ -1,16 +1,16 @@
-# This is a sample Python script.
+import numpy as np
+from scale import scale_into_number
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    filename = 'Breast Cancer dataset/breast_cancer_dataset.txt'
+    list1 = []
+    list2 = []
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    with open(filename, 'r') as file:
+        for line in file:
+            values = [value.strip("'") for value in line.strip().split(',')]
+            scaled = scale_into_number(values)
+            list2.append(scaled.pop())
+            list1.append(scaled)
+    data = np.array(list1)
+    label = np.array(list2)
