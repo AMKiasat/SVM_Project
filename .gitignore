@@ -90,3 +90,9 @@ fabric.properties
 !.idea/runConfigurations
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
+
+Breast Cancer dataset/attributes.txt
+Breast Cancer dataset/test.txt
+Breast Cancer dataset/train_small.txt
+b.pkl
+w.pkl
