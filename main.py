@@ -1,5 +1,51 @@
 import numpy as np
+import scipy.optimize as opt
 from scale import scale_into_number
+from sklearn.model_selection import train_test_split
+
+
+def dual_problem(mu, x, y):
+    sum1 = 0
+    sum2 = 0
+    for i in range(len(x)):
+        sum1 += mu[i]
+        for j in range(len(x)):
+            sum2 += -0.5 * (y[i] * y[j] * mu[i] * mu[j] * np.dot(x[i], x[j]))
+    return -(sum1 + sum2)
+
+
+def s_t(mu, y):
+    sum = 0
+    for i in range(len(y)):
+        sum += mu[i] * y[i]
+    return sum
+
+
+def train_svm(data, label):
+    bound = (0, 1)
+    bounds = tuple(bound for _ in range(len(data)))
+    x0 = [100 for _ in range(len(data))]
+
+    lambda_for_s_t = lambda x: s_t(x, label)
+    constraint = [{"type": "eq", "fun": lambda_for_s_t}]
+    lambda_for_d_p = lambda x: dual_problem(x, data, label)
+
+    result = opt.minimize(
+        lambda_for_d_p,
+        x0,
+        bounds=bounds,
+        constraints=constraint,
+    )
+
+    mu = result.x
+
+    w = 0
+    for i in range(len(data)):
+        w += label[i] * mu[i] * data[i]
+    index_max = np.argmax(mu)
+    b = label[index_max] - np.dot(w, data[index_max])
+    print(b, w)
+
 
 if __name__ == '__main__':
     filename = 'Breast Cancer dataset/breast_cancer_dataset.txt'
@@ -16,23 +62,12 @@ if __name__ == '__main__':
             list1.append(scaled)
     data = np.array(list1, dtype=int)
     label = np.array(list2)
+    train_data, tmp_data, train_labels, tmp_label = train_test_split(data, label, test_size=0.93, random_state=1)
 
     # list2 = [-1, 1, 1]
-    # data = np.array([[1, 0], [3, 1], [3, -1]])
-    # label = np.array(list2)
+    # train_data = np.array([[1, 0], [3, 1], [3, -1]])
+    # list2 = [-1, -1, -1, -1, 1, 1, 1, 1]
+    # train_data = np.array([[-1, 0], [1, 0], [0, -1], [0, 1], [3, 1], [3, -1], [6, 1], [6, -1]])
+    # train_labels = np.array(list2)
 
-    coefficients = []
-    for i in range(len(data)):
-        sum = []
-        for j in range(len(data)):
-            sum.append(label[j] * np.dot(data[i], data[j]))
-        sum.append(-1)
-        coefficients.append(sum)
-    equal_to = list2
-    equal_to.append(0)
-    coefficients.append(equal_to)
-    coefficients = np.array(coefficients, dtype=float)
-    equal_to = np.array(equal_to, dtype=float)
-    mu, _, _, _ = np.linalg.lstsq(coefficients, equal_to, rcond=None)
-
-    print(mu)
+    train_svm(train_data, train_labels)
