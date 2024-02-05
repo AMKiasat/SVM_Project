@@ -136,5 +136,5 @@ def scale_into_number(v):
     elif v[9] == 'recurrence-events':
         s.append(1)
     else:
-        s.append(v[8])
+        s.append(v[9])
     return s

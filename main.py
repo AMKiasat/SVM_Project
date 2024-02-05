@@ -23,7 +23,7 @@ def s_t(mu, y):
 
 
 def train_svm(data, label):
-    bound = (0, 1)
+    bound = (0, 1000000)
     bounds = tuple(bound for _ in range(len(data)))
     x0 = [100 for _ in range(len(data))]
 
@@ -39,7 +39,7 @@ def train_svm(data, label):
     )
 
     mu = result.x
-    print(mu)
+    # print(mu)
 
     w = 0
     for i in range(len(data)):
